@@ -2,6 +2,6 @@ C:\venvs\mysite\Scripts\activate
 django-admin startproject config .
 django-admin startapp pybo
 
-python manage.py runserver
+python manage.py runserver 
 python manage.py makemigrations
 python manage.py migrate
