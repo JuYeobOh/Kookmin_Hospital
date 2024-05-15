@@ -1,9 +1,11 @@
 from django.db import models
 
 class Patient(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     age = models.IntegerField()
+
+    def __str__(self):
+        return self.name
     
 class Prescription(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -11,9 +13,10 @@ class Prescription(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     
 class Drug(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
     count = models.IntegerField()
+    def __str__(self):
+        return self.name
 
 class PrescriptionDrug(models.Model):
     prescription = models.ForeignKey('Prescription', on_delete=models.CASCADE, related_name='prescription_drugs')

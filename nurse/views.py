@@ -1,54 +1,51 @@
+# views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 import jwt
 from datetime import datetime, timedelta, timezone
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from .models import Nurse, Record
 from django.conf import settings
+from .models import Nurse, Record
+from .serializers import NurseSerializer, RecordSerializer
+from django.contrib.auth.hashers import check_password
 
-# JWT 토큰 생성 함수
-def create_jwt_token(nurse):
-    payload = {
-        'id': nurse.id,
-        'email': nurse.email,
-        'exp': datetime.now(timezone.utc) + timedelta(days=1)
-    }
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+class NurseViewSet(viewsets.ModelViewSet):
+    queryset = Nurse.objects.all()
+    serializer_class = NurseSerializer
 
-@require_http_methods(["POST"])
-def login(request):
-    email = request.POST.get('email')
-    password = request.POST.get('password')
-    try:
-        nurse = Nurse.objects.get(email=email)
-        if nurse.check_password(password):
-            token = create_jwt_token(nurse)
-            return JsonResponse({'token': token}, status=200)
-        else:
-            return JsonResponse({'error': 'Invalid password'}, status=401)
-    except Nurse.DoesNotExist:
-        return JsonResponse({'error': 'Nurse not found'}, status=404)
-
-@require_http_methods(["POST"])
-def logout(request):
-    # 로그아웃 뷰는 세션 기반 로그인 시 사용
-    request.session.flush()
-    return JsonResponse({'message': 'Logged out'}, status=200)
-
-@require_http_methods(["POST", "GET"])
-def record(request, nurse_id):
-    if request.method == 'POST':
-        context = request.POST.get('context')
+    @action(detail=False, methods=['post'])
+    def login(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
         try:
-            nurse = Nurse.objects.get(id=nurse_id)
-            Record.objects.create(nurse=nurse, context=context)
-            return JsonResponse({'message': 'Record created'}, status=201)
+            nurse = Nurse.objects.get(email=email)
+            if check_password(password, nurse.password):
+                token = self.create_jwt_token(nurse)
+                return Response({'token': token}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
         except Nurse.DoesNotExist:
-            return JsonResponse({'error': 'Nurse not found'}, status=404)
-    elif request.method == 'GET':
-        try:
-            nurse = Nurse.objects.get(id=nurse_id)
-            records = Record.objects.filter(nurse=nurse).order_by('-date')
-            records_data = [{'context': record.context, 'date': record.date.strftime('%Y-%m-%d')} for record in records]
-            return JsonResponse({'records': records_data}, status=200)
-        except Nurse.DoesNotExist:
-            return JsonResponse({'error': 'No records'}, status=404)
+            return Response({'error': 'Nurse not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
+        request.session.flush()
+        return Response({'message': 'Logged out'}, status=status.HTTP_200_OK)
+
+    def create_jwt_token(self, nurse):
+        payload = {
+            'id': nurse.id,
+            'email': nurse.email,
+            'exp': datetime.now(timezone.utc) + timedelta(days=1)
+        }
+        return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+
+class RecordViewSet(viewsets.ModelViewSet):
+    queryset = Record.objects.all()
+    serializer_class = RecordSerializer
+
+    def get_queryset(self):
+        nurse_id = self.request.query_params.get('nurse_id')
+        if nurse_id:
+            return self.queryset.filter(nurse_id=nurse_id)
+        return self.queryset

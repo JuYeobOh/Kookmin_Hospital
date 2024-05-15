@@ -138,3 +138,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# settings.py
+ALLOWED_HOSTS = ['*']  # 개발 환경에서만 사용. 프로덕션 환경에서는 특정 호스트만 허용해야 함
+
+# 로컬 네트워크에서 실행할 경우 다음과 같이 설정
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True

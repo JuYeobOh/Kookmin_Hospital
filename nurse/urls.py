@@ -1,8 +1,12 @@
-from . import views
-from django.urls import path
+# urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import NurseViewSet, RecordViewSet
+
+router = DefaultRouter()
+router.register(r'nurses', NurseViewSet, basename='nurse')
+router.register(r'records', RecordViewSet, basename='record')
 
 urlpatterns = [
-    path('login/', views.login, name='login'),
-    path('logout/', views.logout, name='logout'),
-    path('record/<int:nurse_id>/', views.record, name='record'),
+    path('api/', include(router.urls)),
 ]

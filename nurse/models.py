@@ -3,7 +3,6 @@ from django.contrib.auth.hashers import make_password, check_password
 
 # Create your models here.
 class Nurse(models.Model):
-    id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
@@ -15,6 +14,9 @@ class Nurse(models.Model):
 
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)  # 비밀번호 검증
+    
+    def __str__(self):
+        return self.name
 
 class Record(models.Model):
     nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)

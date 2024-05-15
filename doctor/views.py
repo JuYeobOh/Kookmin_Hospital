@@ -1,35 +1,40 @@
 import jwt
 from datetime import datetime, timedelta, timezone
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from .models import Doctor
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.conf import settings
+from .models import Doctor
+from .serializers import DoctorSerializer
+from django.contrib.auth.hashers import check_password
 
-# JWT 토큰 생성 함수
-def create_jwt_token(doctor):
-    payload = {
-        'id': doctor.id,
-        'email': doctor.email,
-        'exp': datetime.now(timezone.utc) + timedelta(days=1)
-    }
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+class DoctorViewSet(viewsets.ModelViewSet):
+    queryset = Doctor.objects.all()
+    serializer_class = DoctorSerializer
 
-@require_http_methods(["POST"])
-def login(request):
-    email = request.POST.get('email')
-    password = request.POST.get('password')
-    try:
-        doctor = Doctor.objects.get(email=email)
-        if doctor.check_password(password):
-            token = create_jwt_token(doctor)
-            return JsonResponse({'token': token}, status=200)
-        else:
-            return JsonResponse({'error': 'Invalid password'}, status=401)
-    except Doctor.DoesNotExist:
-        return JsonResponse({'error': 'Doctor not found'}, status=404)
+    @action(detail=False, methods=['post'])
+    def login(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        try:
+            doctor = Doctor.objects.get(email=email)
+            if check_password(password, doctor.password):
+                token = self.create_jwt_token(doctor)
+                return Response({'token': token}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
+        except Doctor.DoesNotExist:
+            return Response({'error': 'Doctor not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@require_http_methods(["POST"])
-def logout(request):
-    # 로그아웃 뷰는 세션 기반 로그인 시 사용
-    request.session.flush()
-    return JsonResponse({'message': 'Logged out'}, status=200)
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
+        request.session.flush()
+        return Response({'message': 'Logged out'}, status=status.HTTP_200_OK)
+
+    def create_jwt_token(self, doctor):
+        payload = {
+            'id': doctor.id,
+            'email': doctor.email,
+            'exp': datetime.now(timezone.utc) + timedelta(days=1)
+        }
+        return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
