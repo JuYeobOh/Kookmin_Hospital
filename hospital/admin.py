@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, Prescription, Drug
+from .models import Patient, Prescription, Drug, PrescriptionDrug
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
@@ -16,3 +16,8 @@ class PrescriptionAdmin(admin.ModelAdmin):
 class DrugAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'count')
     search_fields = ('name',)
+
+@admin.register(PrescriptionDrug)
+class PrescriptionDrugAdmin(admin.ModelAdmin):
+    list_display = ('id', 'prescription', 'drug', 'quantity')
+    search_fields = ('prescription__context', 'drug__name')

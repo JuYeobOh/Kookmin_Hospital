@@ -11,6 +11,9 @@ class Prescription(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     context = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.patient.name + ' - ' + self.date.strftime('%Y-%m-%d %H:%M:%S')
     
 class Drug(models.Model):
     name = models.CharField(max_length=100, unique=True)
