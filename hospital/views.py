@@ -1,27 +1,30 @@
-from django.shortcuts import render
-from .models import HealthcareManager, Patient, Prescription, Drug
+# views.py
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from .models import Patient, Prescription, PrescriptionDrug, Drug
+from .serializers import PatientSerializer, PrescriptionSerializer, PrescriptionDrugSerializer, DrugSerializer
 
-# Create your views here.
-def index(request):
-    return render(request, 'hospital/index.html')
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
 
-def drug_list(request):
-    drug_list = Drug.objects.all()
-    context = {drug_list: drug_list}
-    return render(request, 'hospital/drug_list.html', context)
+class PrescriptionViewSet(viewsets.ModelViewSet):
+    queryset = Prescription.objects.all()
+    serializer_class = PrescriptionSerializer
 
-def patient_list(request):
-    patient_list = Patient.objects.all()
-    context = {patient_list: patient_list}
-    return render(request, 'hospital/patient_list.html', context)
+    @action(detail=True, methods=['post'])
+    def add_drugs(self, request, pk=None):
+        prescription = self.get_object()
+        drugs_data = request.data.get('prescription_drugs')
+        for drug_data in drugs_data:
+            PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
+        return Response({'status': 'drugs added'})
 
-def patient_detail(request, patient_id):
-    if request.method == 'POST':
-        context = request.POST.get('context')
-        drug_ids = request.POST.getlist('drug_ids')
-        HealthcareManager.create_prescription(patient_id, context, drug_ids)
-    else:
-        patient = HealthcareManager.get_patient(patient_id)
-        prescriptions = HealthcareManager.get_patient_prescriptions(patient_id)
-        context = {patient: patient, prescriptions: prescriptions}
-        return render(request, 'hospital/patient_detail.html', context)
+class PrescriptionDrugViewSet(viewsets.ModelViewSet):
+    queryset = PrescriptionDrug.objects.all()
+    serializer_class = PrescriptionDrugSerializer
+
+class DrugViewSet(viewsets.ModelViewSet):
+    queryset = Drug.objects.all()
+    serializer_class = DrugSerializer

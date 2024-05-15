@@ -1,9 +1,13 @@
-from . import views
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import PatientViewSet, PrescriptionViewSet, PrescriptionDrugViewSet, DrugViewSet
+
+router = DefaultRouter()
+router.register(r'patients', PatientViewSet)
+router.register(r'prescriptions', PrescriptionViewSet)
+router.register(r'prescription-drugs', PrescriptionDrugViewSet)
+router.register(r'drugs', DrugViewSet)
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('drug_list', views.drug_list, name='drug_list'),
-    path('patient_list', views.patient_list, name='patient_list'),
-    path('patient/<int:patient_id>', views.patient_detail, name='patient_detail'),
+    path('api/', include(router.urls)),
 ]

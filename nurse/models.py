@@ -15,3 +15,8 @@ class Nurse(models.Model):
 
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)  # 비밀번호 검증
+
+class Record(models.Model):
+    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)
+    context = models.TextField()
+    date = models.DateField(auto_now_add=True)
