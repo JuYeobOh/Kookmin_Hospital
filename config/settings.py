@@ -124,7 +124,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -137,14 +140,14 @@ REST_FRAMEWORK = {
     ],
 }
 
-import dj_database_url
+'''import dj_database_url
 import os
 
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL')
     )
-}
+}'''
 
 ALLOWED_HOSTS = ['*']  # 개발 중에는 편리하지만, 보안상 위험할 수 있으므로 배포 시에는 수정 필요
 CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에서는 필요한 도메인만 허용하도록 설정
