@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wzp+39()a6h&1e#4d4%58%d5jjii4v#y_x28ae(c&8xs-cgmn6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -82,13 +82,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+'''
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -144,3 +145,6 @@ DATABASES = {
         default=os.environ.get('DATABASE_URL')
     )
 }
+
+ALLOWED_HOSTS = ['*']  # 개발 중에는 편리하지만, 보안상 위험할 수 있으므로 배포 시에는 수정 필요
+CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에서는 필요한 도메인만 허용하도록 설정
