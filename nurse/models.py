@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
+from hospital.models import Patient
 
 # Create your models here.
 class Nurse(models.Model):
@@ -20,5 +21,6 @@ class Nurse(models.Model):
 
 class Record(models.Model):
     nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     context = models.TextField()
     date = models.DateField(auto_now_add=True)

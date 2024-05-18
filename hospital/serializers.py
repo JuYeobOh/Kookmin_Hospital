@@ -29,3 +29,10 @@ class DrugSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drug
         fields = ['id', 'name', 'count']
+
+class PrescriptionDrugFlatSerializer(serializers.ModelSerializer):  
+    patient = serializers.CharField(source='prescription.patient.name')
+    drug = serializers.CharField(source='drug.name')
+    class Meta:
+        model = PrescriptionDrug
+        fields = ['patient', 'drug', 'quantity']

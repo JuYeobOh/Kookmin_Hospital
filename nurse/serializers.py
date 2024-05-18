@@ -15,4 +15,4 @@ class NurseSerializer(serializers.ModelSerializer):
 class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
-        fields = ['id', 'nurse', 'context', 'date']
+        fields = ['id', 'nurse','patient', 'context', 'date']
