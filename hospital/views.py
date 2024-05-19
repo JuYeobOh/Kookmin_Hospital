@@ -17,6 +17,8 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     def add_drugs(self, request, pk=None):
         prescription = self.get_object()
         drugs_data = request.data.get('prescription_drugs')
+        if drugs_data is None:
+            drugs_data = []
         for drug_data in drugs_data:
             PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
         return Response({'status': 'drugs added'})
