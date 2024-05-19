@@ -22,7 +22,9 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         prescription_drugs_data = self.initial_data.get('prescription_drugs',[])
         prescription = Prescription.objects.create(**validated_data)
         for drug_data in prescription_drugs_data:
-            PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
+            drug_id = drug_data.pop('drug')
+            drug = Drug.objects.get(id=drug_id)
+            PrescriptionDrug.objects.create(prescription=prescription, drug=drug,**drug_data)
         return prescription
 
 class DrugSerializer(serializers.ModelSerializer):
