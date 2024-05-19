@@ -19,7 +19,7 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         fields = ['id', 'patient', 'context', 'date', 'prescription_drugs']
 
     def create(self, validated_data):
-        prescription_drugs_data = self.initial_data.get('prescription_drugs')
+        prescription_drugs_data = self.initial_data.get('prescription_drugs',[])
         prescription = Prescription.objects.create(**validated_data)
         for drug_data in prescription_drugs_data:
             PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
