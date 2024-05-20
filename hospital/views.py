@@ -16,11 +16,12 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def add_drugs(self, request, pk=None):
         prescription = self.get_object()
-        drugs_data = request.data.get('prescription_drugs')
-        if drugs_data is None:
-            drugs_data = []
+        drugs_data = request.data.get('prescription_drugs',[])
+    
         for drug_data in drugs_data:
-            PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
+            drug_id = drug_data.pop('drug')
+            drug = Drug.objects.get(id=drug_id)
+            PrescriptionDrug.objects.create(prescription=prescription, drug=drug, **drug_data)
         return Response({'status': 'drugs added'})
     
     @action(detail=False, methods=['get'], url_path='check_drug')

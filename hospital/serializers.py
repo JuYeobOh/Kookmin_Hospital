@@ -12,17 +12,17 @@ class PrescriptionDrugSerializer(serializers.ModelSerializer):
         fields = ['id', 'prescription', 'drug', 'quantity']
 
 class PrescriptionSerializer(serializers.ModelSerializer):
-    prescription_drugs = PrescriptionDrugSerializer(many=True, read_only=True)
+    prescription_drugs = PrescriptionDrugSerializer(many=True)
 
     class Meta:
         model = Prescription
         fields = ['id', 'patient', 'context', 'date', 'prescription_drugs']
 
     def create(self, validated_data):
-        prescription_drugs_data = self.initial_data.get('prescription_drugs',[])
+        prescription_drugs_data = validated_data.pop('prescription_drugs')
         prescription = Prescription.objects.create(**validated_data)
         for drug_data in prescription_drugs_data:
-            drug_id = drug_data.pop('drug')
+            drug_id = drug_data.pop('drug').id
             drug = Drug.objects.get(id=drug_id)
             PrescriptionDrug.objects.create(prescription=prescription, drug=drug,**drug_data)
         return prescription
