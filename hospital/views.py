@@ -37,6 +37,7 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
             pd.drug.save()
         return Response({'status': 'drugs given'}, status=status.HTTP_200_OK)
     
+    @action(detail=False, methods=['post'], url_path='check_drug')
     def check_drug(self, request):
         prescription_drugs = PrescriptionDrug.objects.all().select_related('prescription__patient', 'drug').order_by('prescription__patient__name', 'drug__name')
         serializer = PrescriptionDrugFlatSerializer(prescription_drugs, many=True)
