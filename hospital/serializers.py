@@ -1,3 +1,4 @@
+# serializers.py
 from rest_framework import serializers
 from .models import Patient, Prescription, PrescriptionDrug, Drug
 
@@ -7,6 +8,9 @@ class PatientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'age']
 
 class PrescriptionDrugSerializer(serializers.ModelSerializer):
+    prescription = serializers.PrimaryKeyRelatedField(queryset=Prescription.objects.all(), write_only=True, required=False)
+    drug = serializers.PrimaryKeyRelatedField(queryset=Drug.objects.all())
+
     class Meta:
         model = PrescriptionDrug
         fields = ['id', 'prescription', 'drug', 'quantity']
@@ -19,12 +23,10 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         fields = ['id', 'patient', 'context', 'date', 'prescription_drugs']
 
     def create(self, validated_data):
-        prescription_drugs_data = validated_data.pop('prescription_drugs')
+        prescription_drugs_data = validated_data.pop('prescription_drugs', [])
         prescription = Prescription.objects.create(**validated_data)
         for drug_data in prescription_drugs_data:
-            drug_id = drug_data.pop('drug').id
-            drug = Drug.objects.get(id=drug_id)
-            PrescriptionDrug.objects.create(prescription=prescription, drug=drug,**drug_data)
+            PrescriptionDrug.objects.create(prescription=prescription, **drug_data)
         return prescription
 
 class DrugSerializer(serializers.ModelSerializer):
