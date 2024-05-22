@@ -16,3 +16,6 @@ class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = ['id', 'nurse','patient', 'context', 'date']
+
+    def create(self, validated_data):
+        return super(RecordSerializer, self).create(validated_data)
