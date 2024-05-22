@@ -19,13 +19,14 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     def add_drugs(self, request, pk=None):
         prescription = self.get_object()
         drugs_data = request.data.get('prescription_drugs',[])
+    
         for drug_data in drugs_data:
             drug_id = drug_data.pop('drug')
             drug = Drug.objects.get(id=drug_id)
             PrescriptionDrug.objects.create(prescription=prescription, drug=drug, **drug_data)
         return Response({'status': 'drugs added'})
     
-    @action(detail=True, methods=['post'], url_path='give_drug')
+    @action(detail=False, methods=['post'], url_path='give_drug')
     @transaction.atomic
     def give_drug(self, request):
         prescription_drugs = PrescriptionDrug.objects.all()
