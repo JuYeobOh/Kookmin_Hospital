@@ -45,7 +45,8 @@ class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = RecordSerializer
 
     def get_queryset(self):
-        nurse_id = self.request.query_params.get('nurse_id')
-        if nurse_id:
-            return self.queryset.filter(nurse_id=nurse_id)
-        return self.queryset
+        queryset = super().get_queryset()
+        nurse_id = self.request.query_params.get('nurse_id', None)
+        if nurse_id is not None:
+            queryset = queryset.filter(nurse_id=nurse_id)
+        return queryset
