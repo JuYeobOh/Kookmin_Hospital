@@ -50,3 +50,8 @@ class RecordViewSet(viewsets.ModelViewSet):
         if nurse_id is not None:
             queryset = queryset.filter(nurse_id=nurse_id)
         return queryset
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.refresh_from_db()  # DB에서 최신 데이터 불러오기
+        return instance
