@@ -19,7 +19,6 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     def add_drugs(self, request, pk=None):
         prescription = self.get_object()
         drugs_data = request.data.get('prescription_drugs',[])
-    
         for drug_data in drugs_data:
             drug_id = drug_data.pop('drug')
             drug = Drug.objects.get(id=drug_id)
@@ -29,14 +28,13 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='give_drug')
     @transaction.atomic
     def give_drug(self, request):
-        drug_list = PrescriptionDrug.objects.get(id=request.data.get('id'))
-        for drug in drug_list:
-            if drug.quantity > drug.drug.count:
-                return Response({'status': 'not enough drug'}, status=status.HTTP_400_BAD_REQUEST)
-            drug.drug.count -= drug.quantity
-            drug.drug.save()
-        return Response({'status': 'drug given'})
-        
+        prescription_drugs = PrescriptionDrug.objects.all()
+        for pd in prescription_drugs:
+            if pd.drug.count < pd.quantity:
+                return Response({'error': f'Not enough {pd.drug.name} in stock'}, status=status.HTTP_400_BAD_REQUEST)
+            pd.drug.count -= pd.quantity
+            pd.drug.save()
+        return Response({'status': 'drugs given'}, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['post'], url_path='check_drug')
     def check_drug(self, request):
