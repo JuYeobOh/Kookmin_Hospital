@@ -1,4 +1,3 @@
-# views.py
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,7 +17,7 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def add_drugs(self, request, pk=None):
         prescription = self.get_object()
-        drugs_data = request.data.get('prescription_drugs',[])
+        drugs_data = request.data.get('prescription_drugs', [])
     
         for drug_data in drugs_data:
             drug_id = drug_data.pop('drug')
