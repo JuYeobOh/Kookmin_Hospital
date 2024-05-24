@@ -146,14 +146,27 @@ CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에�
 
 
 
+# settings.py
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/path/to/django/debug.log',
+            'filename': 'logs/debug.log',  # logs 디렉토리로 경로 설정
+            'formatter': 'verbose',  # 또는 'simple'을 사용할 수 있음
         },
     },
     'loggers': {
