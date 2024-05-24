@@ -145,7 +145,6 @@ ALLOWED_HOSTS = ['*']  # 개발 중에는 편리하지만, 보안상 위험할 �
 CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에서는 필요한 도메인만 허용하도록 설정
 
 
-
 # settings.py
 
 LOGGING = {
@@ -165,8 +164,14 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',  # logs 디렉토리로 경로 설정
-            'formatter': 'verbose',  # 또는 'simple'을 사용할 수 있음
+            'filename': BASE_DIR / 'logs/debug.log',
+            'formatter': 'verbose',
+        },
+        'request_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/requests.log',
+            'formatter': 'simple',
         },
     },
     'loggers': {
@@ -174,6 +179,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['request_file'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }
