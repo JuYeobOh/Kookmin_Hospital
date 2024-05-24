@@ -144,10 +144,7 @@ REST_FRAMEWORK = {
 ALLOWED_HOSTS = ['*']  # 개발 중에는 편리하지만, 보안상 위험할 수 있으므로 배포 시에는 수정 필요
 CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에서는 필요한 도메인만 허용하도록 설정
 
-
 import os
-
-# ... 기존 설정들
 
 LOGGING = {
     'version': 1,
@@ -162,7 +159,7 @@ LOGGING = {
             'style': '{',
         },
         'request': {
-            'format': '[{asctime}] "{message}" {status_code}',
+            'format': '[{asctime}] "{request_method} {path_info} {protocol}" {status_code}',
             'style': '{',
         },
     },
