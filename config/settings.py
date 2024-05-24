@@ -147,6 +147,8 @@ CORS_ALLOW_ALL_ORIGINS = True  # 개발 중에만 사용하고, 프로덕션에�
 
 import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -160,7 +162,7 @@ LOGGING = {
             'style': '{',
         },
         'request': {
-            'format': '[{asctime}] "{request_method} {path_info} {protocol}" {status_code}',
+            'format': '[{asctime}] "{message}"',
             'style': '{',
         },
     },
