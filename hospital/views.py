@@ -27,8 +27,9 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'], url_path='give_drug')
     @transaction.atomic
-    def give_drug(self, request):
-        prescription_drugs = PrescriptionDrug.objects.get(Prescription = request.data['prescription_id'])
+    def give_drug(self, request, pk=None):
+        prescription = self.get_object()
+        prescription_drugs = PrescriptionDrug.objects.filter(prescription=prescription)
         for pd in prescription_drugs:
             if pd.drug.count < pd.quantity:
                 return Response({'error': f'Not enough {pd.drug.name} in stock'}, status=status.HTTP_400_BAD_REQUEST)
