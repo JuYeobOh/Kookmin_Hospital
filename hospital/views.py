@@ -37,7 +37,7 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
             pd.drug.save()
         return Response({'status': 'drugs given'}, status=status.HTTP_200_OK)
     
-    @action(detail=False, methods=['post'], url_path='check_drug')
+    @action(detail=False, methods=['post','get'], url_path='check_drug')
     def check_drug(self, request):
         prescription_drugs = PrescriptionDrug.objects.all().select_related('prescription__patient', 'drug').order_by('prescription__patient__name', 'drug__name')
         serializer = PrescriptionDrugFlatSerializer(prescription_drugs, many=True)
@@ -50,3 +50,11 @@ class PrescriptionDrugViewSet(viewsets.ModelViewSet):
 class DrugViewSet(viewsets.ModelViewSet):
     queryset = Drug.objects.all()
     serializer_class = DrugSerializer
+
+    @action(detail=True, methods=['post'])
+    def order(self, request, pk=None):
+        drug = self.get_object()
+        count = request.data.get('count')
+        drug.count += count
+        drug.save()
+        return Response({'status': 'count added'})
