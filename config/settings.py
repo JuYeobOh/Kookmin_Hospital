@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'nurse',
     'doctor',
+    'chemist',
     'hospital',
     'corsheaders',
 ]
@@ -55,7 +56,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'my_middleware.middlewares.RequestLogMiddleware',
 ]
 
 

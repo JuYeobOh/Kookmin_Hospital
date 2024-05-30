@@ -1,4 +1,4 @@
-C:\venvs\mysite\Scripts\activate
+C:\Dev\tools\venvs\mysite\Scripts\activate
 django-admin startproject config .
 django-admin startapp pybo
 
